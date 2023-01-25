@@ -22,6 +22,46 @@ app.get('/',(req,res) => {
     res.send('Hello world')
 })
 
+app.post('/auth/login',async (req,res) => {
+    try{
+        const user = await UserModule.findOne({ email: req.body.email })
+
+        if (!user){
+            return res.status(404).json({
+                message: 'User Not Found'
+            })
+        }
+
+        const isValidPass = await bcrypt.compare(req.body.password,user._doc.passwordHash);
+
+        if (!isValidPass) {
+            return res.status(404).json({
+                message: 'Email or Password Failed',
+            })
+        }
+
+        const token = await jwt.sign({
+            _id: user._id,
+        },'secret123',
+            {
+                expiresIn: '1h',
+            })
+
+        const { passwordHash, ...UserData } = user._doc
+
+        res.json({
+            ...UserData,
+            token,
+        })
+
+
+    }catch (err){
+        res.status(500).json({
+            message: 'Email or Password Failed'
+        })
+    }
+})
+
 app.post('/auth/register', registerValidation,async (req,res) => {
     try{const errors = validationResult(req);
         if (!errors.isEmpty()){
