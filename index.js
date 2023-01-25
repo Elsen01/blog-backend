@@ -7,12 +7,13 @@ import { validationResult } from "express-validator";
 
 import { registerValidation } from "./validations/auth.js";
 
-import UserModule from './models/User.js'
+import UserModule from './models/User.js';
+import checkAuth from './utils/checkAuth.js'
 
 
 mongoose.connect('mongodb://localhost:27017/blog')
     .then(()=>console.log('DB Ok'))
-    .catch((err) => console.log('DB ERROjR',err))
+    .catch((err) => console.log('DB ERROR',err))
 
 const app = express();
 
@@ -99,6 +100,16 @@ app.post('/auth/register', registerValidation,async (req,res) => {
         })
     }
 });
+
+
+app.get('/auth/me',checkAuth,(req,res) => {
+   try {
+       res.json({
+           success: true,
+       })
+
+   }catch (err){}
+})
 
 
 app.listen(4000,(err)=> {
