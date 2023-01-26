@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from "mongoose";
 mongoose.set('strictQuery', true);
 
-import { registerValidation } from "./validations/auth.js";
+import { registerValidation, loginValidation } from "./validation.js";
 
 import checkAuth from './utils/checkAuth.js';
 import * as UserController from './controllers/UserController.js'
@@ -20,7 +20,7 @@ app.get('/',(req,res) => {
     res.send('Hello world')
 })
 
-app.post('/auth/login', UserController.login);
+app.post('/auth/login', loginValidation, UserController.login);
 app.post('/auth/register', registerValidation,UserController.register);
 app.get('/auth/me', checkAuth,UserController.getMe);
 
