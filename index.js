@@ -8,7 +8,7 @@ import { validationResult } from "express-validator";
 import { registerValidation } from "./validations/auth.js";
 
 import UserModule from './models/User.js';
-import checkAuth from './utils/checkAuth.js'
+import checkAuth from './utils/checkAuth.js';
 
 
 mongoose.connect('mongodb://localhost:27017/blog')
@@ -102,13 +102,25 @@ app.post('/auth/register', registerValidation,async (req,res) => {
 });
 
 
-app.get('/auth/me',checkAuth,(req,res) => {
+app.get('/auth/me', checkAuth, async (req,res) => {
    try {
-       res.json({
-           success: true,
-       })
+       const user = await UserModule.findById(req.userId);
 
-   }catch (err){}
+       if (!user){
+          return  res.status(404).json({
+               message: 'User Not Found'
+           });
+       }
+
+       const { passwordHash, ...userData} =user._doc
+       res.json(userData)
+
+   }catch (err){
+       console.log(err);
+       res.status(404).json({
+           message: 'No Input'
+       })
+   }
 })
 
 
