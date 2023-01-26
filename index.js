@@ -2,10 +2,12 @@ import express from 'express';
 import mongoose from "mongoose";
 mongoose.set('strictQuery', true);
 
-import { registerValidation, loginValidation } from "./validation.js";
+import {registerValidation, loginValidation, postCreateValidation} from "./validation.js";
 
 import checkAuth from './utils/checkAuth.js';
-import * as UserController from './controllers/UserController.js'
+import * as UserController from './controllers/UserController.js';
+import * as PostController from './controllers/PostController.js'
+
 
 
 mongoose.connect('mongodb://localhost:27017/blog')
@@ -22,7 +24,10 @@ app.get('/',(req,res) => {
 
 app.post('/auth/login', loginValidation, UserController.login);
 app.post('/auth/register', registerValidation,UserController.register);
-app.get('/auth/me', checkAuth,UserController.getMe);
+app.get('/auth/me', checkAuth, UserController.getMe);
+
+
+app.post('/posts', checkAuth, postCreateValidation,PostController.create)
 
 
 app.listen(4000,(err)=> {
