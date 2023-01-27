@@ -49,6 +49,37 @@ export const findOne = async (req,res) => {
         })
     }
 }
+
+export const remove = async (req,res) => {
+   try {
+       const postId = req.params.id;
+
+       PostModel.findByIdAndDelete(
+           {
+               _id: postId,
+           },(err,doc) => {
+               if (err){
+                   console.log(err);
+                  return  res.status(500).json({
+                       message: 'Failed'
+                   })
+               }
+               if (!doc){
+                   return res.status(404).json({
+                       message: 'Post Not Found'
+                   })
+               }
+               res.json({
+                   success: true,
+               })
+           })
+   }catch (err){
+       console.log(err);
+       res.status(500).json({
+           message: 'failed',
+       })
+   }
+}
 export const create = async (req,res) => {
     try {
         const doc = new PostModel({
