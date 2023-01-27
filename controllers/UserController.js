@@ -1,17 +1,13 @@
-import {validationResult} from "express-validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import UserModule from "../models/User.js";
 
-export const register = async (req,res) => {
-    try{const errors = validationResult(req);
-        if (!errors.isEmpty()){
-            return res.status(400).json(errors.array())
-        }
+export const register = async (req, res) => {
+    try {
         const password = req.body.password;
         const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(password,salt);
+        const hash = await bcrypt.hash(password, salt);
 
         const doc = new UserModule({
             email: req.body.email,
@@ -23,18 +19,18 @@ export const register = async (req,res) => {
 
         const token = jwt.sign({
                 _id: user._id
-            },'secret123',
+            }, 'secret123',
             {
                 expiresIn: '1h',
             })
 
-        const {passwordHash, ...userData } = user._doc
+        const {passwordHash, ...userData} = user._doc
         res.json({
             ...userData,
             token,
         })
 
-    } catch (err){
+    } catch (err) {
         console.log(err)
         res.status(500).json({
             message: 'registration failed',
@@ -42,17 +38,17 @@ export const register = async (req,res) => {
     }
 }
 
-export const login = async (req,res) => {
-    try{
-        const user = await UserModule.findOne({ email: req.body.email })
+export const login = async (req, res) => {
+    try {
+        const user = await UserModule.findOne({email: req.body.email})
 
-        if (!user){
+        if (!user) {
             return res.status(404).json({
                 message: 'User Not Found'
             })
         }
 
-        const isValidPass = await bcrypt.compare(req.body.password,user._doc.passwordHash);
+        const isValidPass = await bcrypt.compare(req.body.password, user._doc.passwordHash);
 
         if (!isValidPass) {
             return res.status(404).json({
@@ -62,12 +58,12 @@ export const login = async (req,res) => {
 
         const token = await jwt.sign({
                 _id: user._id,
-            },'secret123',
+            }, 'secret123',
             {
                 expiresIn: '1h',
             })
 
-        const { passwordHash, ...UserData } = user._doc
+        const {passwordHash, ...UserData} = user._doc
 
         res.json({
             ...UserData,
@@ -75,27 +71,27 @@ export const login = async (req,res) => {
         })
 
 
-    }catch (err){
+    } catch (err) {
         res.status(500).json({
             message: 'Email or Password Failed'
         })
     }
 };
 
-export const getMe = async (req,res) => {
+export const getMe = async (req, res) => {
     try {
         const user = await UserModule.findById(req.userId);
 
-        if (!user){
-            return  res.status(404).json({
+        if (!user) {
+            return res.status(404).json({
                 message: 'User Not Found'
             });
         }
 
-        const { passwordHash, ...userData} =user._doc
+        const {passwordHash, ...userData} = user._doc
         res.json(userData)
 
-    }catch (err){
+    } catch (err) {
         console.log(err);
         res.status(404).json({
             message: 'No Input'

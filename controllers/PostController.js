@@ -1,19 +1,19 @@
 import PostModel from '../models/Post.js';
 
-export const getAll = async (req,res) => {
-   try {
-       const post = await PostModel.find().populate('user').exec()
+export const getAll = async (req, res) => {
+    try {
+        const post = await PostModel.find().populate('user').exec()
 
-       res.json(post)
-   }catch (err){
-       console.log(err);
-       res.status(500).json({
-           message: 'failed',
-       });
-   }
+        res.json(post)
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'failed',
+        });
+    }
 };
 
-export const findOne = async (req,res) => {
+export const findOne = async (req, res) => {
     try {
         const PostId = req.params.id;
 
@@ -22,27 +22,27 @@ export const findOne = async (req,res) => {
                 _id: PostId,
             },
             {
-                $inc: { viewsCount: 1 },
+                $inc: {viewsCount: 1},
             },
             {
                 returnDocument: 'after',
             },
-            (err,doc) =>{
-                if (err){
+            (err, doc) => {
+                if (err) {
                     console.log(err);
-                     return  res.status(500).json({
+                    return res.status(500).json({
                         message: 'failed to return article',
                     })
                 }
-                if (!doc){
-                    return  res.status(404).json({
+                if (!doc) {
+                    return res.status(404).json({
                         message: 'Post Not Found'
                     })
                 }
                 res.json(doc)
             }
         )
-    }catch (err){
+    } catch (err) {
         console.log(err);
         res.status(500).json({
             message: 'failed',
@@ -50,37 +50,37 @@ export const findOne = async (req,res) => {
     }
 }
 
-export const remove = async (req,res) => {
-   try {
-       const postId = req.params.id;
+export const remove = async (req, res) => {
+    try {
+        const postId = req.params.id;
 
-       PostModel.findByIdAndDelete(
-           {
-               _id: postId,
-           },(err,doc) => {
-               if (err){
-                   console.log(err);
-                  return  res.status(500).json({
-                       message: 'Failed'
-                   })
-               }
-               if (!doc){
-                   return res.status(404).json({
-                       message: 'Post Not Found'
-                   })
-               }
-               res.json({
-                   success: true,
-               })
-           })
-   }catch (err){
-       console.log(err);
-       res.status(500).json({
-           message: 'failed',
-       })
-   }
+        PostModel.findByIdAndDelete(
+            {
+                _id: postId,
+            }, (err, doc) => {
+                if (err) {
+                    console.log(err);
+                    return res.status(500).json({
+                        message: 'Failed'
+                    })
+                }
+                if (!doc) {
+                    return res.status(404).json({
+                        message: 'Post Not Found'
+                    })
+                }
+                res.json({
+                    success: true,
+                })
+            })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'failed',
+        })
+    }
 }
-export const create = async (req,res) => {
+export const create = async (req, res) => {
     try {
         const doc = new PostModel({
             title: req.body.title,
@@ -94,7 +94,7 @@ export const create = async (req,res) => {
 
         res.json(post)
 
-    }catch (err){
+    } catch (err) {
         console.log(err);
         res.status(500).json({
             message: 'Could Not Create Post'
@@ -102,14 +102,14 @@ export const create = async (req,res) => {
     }
 }
 
-export const update = async (req,res) => {
+export const update = async (req, res) => {
     try {
         const postId = req.params.id;
 
         await PostModel.updateOne(
             {
-            _id: postId,
-        },{
+                _id: postId,
+            }, {
                 title: req.body.title,
                 text: req.body.text,
                 imageUrl: req.body.imageUrl,
@@ -121,7 +121,7 @@ export const update = async (req,res) => {
             success: true,
         })
 
-    }catch (err) {
+    } catch (err) {
         console.log(err);
         res.status(500).json({
             message: 'failed',
