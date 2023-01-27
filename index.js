@@ -30,8 +30,10 @@ app.get('/auth/me', checkAuth, UserController.getMe);
 
 app.get('/posts',PostController.getAll);
 app.get('/post/:id',PostController.findOne);
-app.delete('/post/:id',checkAuth,PostController.remove)
 app.post('/posts', checkAuth, postCreateValidation,PostController.create);
+app.delete('/post/:id',checkAuth,PostController.remove);
+app.put('/post/:id',checkAuth,PostController.update)
+
 
 
 
