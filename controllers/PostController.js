@@ -9,8 +9,45 @@ export const getAll = async (req,res) => {
        console.log(err);
        res.status(500).json({
            message: 'failed',
-       })
+       });
    }
+};
+
+export const findOne = async (req,res) => {
+    try {
+        const PostId = req.params.id;
+
+        PostModel.findByIdAndUpdate(
+            {
+                _id: PostId,
+            },
+            {
+                $inc: { viewsCount: 1 },
+            },
+            {
+                returnDocument: 'after',
+            },
+            (err,doc) =>{
+                if (err){
+                    console.log(err);
+                     return  res.status(500).json({
+                        message: 'failed to return article',
+                    })
+                }
+                if (!doc){
+                    return  res.status(404).json({
+                        message: 'Post Not Found'
+                    })
+                }
+                res.json(doc)
+            }
+        )
+    }catch (err){
+        console.log(err);
+        res.status(500).json({
+            message: 'failed',
+        })
+    }
 }
 export const create = async (req,res) => {
     try {
