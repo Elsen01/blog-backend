@@ -28,7 +28,7 @@ app.get('/auth/me', checkAuth, UserController.getMe);
 
 
 app.post('/posts', checkAuth, postCreateValidation,PostController.create);
-app.get('/posts',PostController.getAll)
+app.get('/posts',PostController.getAll);
 
 
 app.listen(4000,(err)=> {
